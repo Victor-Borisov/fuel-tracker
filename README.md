@@ -16,6 +16,23 @@ A web application for tracking fuel consumption, costs, and vehicle statistics.
 - **Data Export**: Export your data to CSV (GDPR compliance)
 - **Account Management**: Update profile settings, delete account
 
+## Screenshots
+
+### Login
+![Login](.github/images/Login.png)
+
+### Dashboard
+![Dashboard](.github/images/Dashboard.png)
+
+### My Vehicles
+![My Vehicles](.github/images/MyVehicles.png)
+
+### Fuel Entries
+![Fuel Entries](.github/images/FuelEntries.png)
+
+### Profile
+![Profile](.github/images/Profile.png)
+
 ## Tech Stack
 
 ### Backend
