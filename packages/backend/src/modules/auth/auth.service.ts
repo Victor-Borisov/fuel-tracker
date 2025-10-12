@@ -10,6 +10,21 @@ import { UpdateProfileDto } from './dto/update-profile.dto';
 export class AuthService {
   constructor(@Inject(PG_CONNECTION) private pool: Pool) {}
 
+  private transformUserToCamelCase(user: any) {
+    if (!user) return null;
+    return {
+      id: user.id,
+      email: user.email,
+      displayName: user.display_name,
+      preferredCurrency: user.preferred_currency,
+      preferredDistanceUnit: user.preferred_distance_unit,
+      preferredVolumeUnit: user.preferred_volume_unit,
+      timezone: user.timezone,
+      createdAt: user.created_at,
+      updatedAt: user.updated_at,
+    };
+  }
+
   async register(registerDto: RegisterDto) {
     const { email, password, displayName } = registerDto;
 
@@ -31,7 +46,7 @@ export class AuthService {
       [email, passwordHash, displayName || null],
     );
 
-    return result.rows[0];
+    return this.transformUserToCamelCase(result.rows[0]);
   }
 
   async validateUser(email: string, password: string): Promise<any> {
@@ -53,7 +68,7 @@ export class AuthService {
     }
 
     const { password_hash, ...userWithoutPassword } = user;
-    return userWithoutPassword;
+    return this.transformUserToCamelCase(userWithoutPassword);
   }
 
   async findById(id: number) {
@@ -62,7 +77,7 @@ export class AuthService {
       [id],
     );
 
-    return result.rows[0] || null;
+    return this.transformUserToCamelCase(result.rows[0]);
   }
 
   async updateProfile(userId: number, updateProfileDto: UpdateProfileDto) {
@@ -121,7 +136,7 @@ export class AuthService {
     `;
 
     const result = await this.pool.query(query, values);
-    return result.rows[0];
+    return this.transformUserToCamelCase(result.rows[0]);
   }
 
   async deleteAccount(userId: number) {

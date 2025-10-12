@@ -1,16 +1,9 @@
-import { IsString, IsInt, IsOptional, Min, Max } from 'class-validator';
+import { IsString, IsInt, IsOptional, IsNumber, Min, Max } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateVehicleDto {
   @ApiProperty({
-    example: 'My Tesla Model 3',
-    description: 'Vehicle name/label',
-  })
-  @IsString()
-  name: string;
-
-  @ApiProperty({
-    example: 'Tesla Model 3',
+    example: 'Toyota Camry',
     description: 'Vehicle make and model',
     required: false,
   })
@@ -32,11 +25,29 @@ export class CreateVehicleDto {
   year?: number;
 
   @ApiProperty({
-    example: 'Electric',
+    example: 'Gasoline',
     description: 'Fuel type (Gasoline, Diesel, Electric, Hybrid, etc.)',
     required: false,
   })
   @IsOptional()
   @IsString()
   fuelType?: string;
+
+  @ApiProperty({
+    example: 'ABC-123',
+    description: 'Vehicle license plate number',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  licensePlate?: string;
+
+  @ApiProperty({
+    example: 54.0,
+    description: 'Tank capacity in liters',
+    required: false,
+  })
+  @IsOptional()
+  @IsNumber()
+  tankCapacityLiters?: number;
 }

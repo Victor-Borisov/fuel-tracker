@@ -9,13 +9,13 @@ export class VehiclesService {
   constructor(@Inject(PG_CONNECTION) private pool: Pool) {}
 
   async create(userId: number, createVehicleDto: CreateVehicleDto) {
-    const { name, makeModel, year, fuelType } = createVehicleDto;
+    const { makeModel, year, fuelType, licensePlate, tankCapacityLiters } = createVehicleDto;
 
     const result = await this.pool.query(
-      `INSERT INTO vehicles (user_id, name, make, model, year, fuel_type)
+      `INSERT INTO vehicles (user_id, name, year, fuel_type, license_plate, tank_capacity_liters)
        VALUES ($1, $2, $3, $4, $5, $6)
-       RETURNING id, user_id, name, make, model, year, fuel_type, created_at, updated_at`,
-      [userId, name, makeModel || null, null, year || null, fuelType || null],
+       RETURNING id, user_id, name as "makeModel", year, fuel_type as "fuelType", license_plate as "licensePlate", tank_capacity_liters as "tankCapacityLiters", created_at as "createdAt", updated_at as "updatedAt"`,
+      [userId, makeModel || null, year || null, fuelType || null, licensePlate || null, tankCapacityLiters || null],
     );
 
     return result.rows[0];
@@ -23,7 +23,7 @@ export class VehiclesService {
 
   async findAll(userId: number) {
     const result = await this.pool.query(
-      `SELECT id, user_id, name, make, model, year, fuel_type, created_at, updated_at
+      `SELECT id, user_id, name as "makeModel", year, fuel_type as "fuelType", license_plate as "licensePlate", tank_capacity_liters as "tankCapacityLiters", created_at as "createdAt", updated_at as "updatedAt"
        FROM vehicles
        WHERE user_id = $1
        ORDER BY created_at DESC`,
@@ -35,7 +35,7 @@ export class VehiclesService {
 
   async findOne(id: number, userId: number) {
     const result = await this.pool.query(
-      `SELECT id, user_id, name, make, model, year, fuel_type, created_at, updated_at
+      `SELECT id, user_id, name as "makeModel", year, fuel_type as "fuelType", license_plate as "licensePlate", tank_capacity_liters as "tankCapacityLiters", created_at as "createdAt", updated_at as "updatedAt"
        FROM vehicles
        WHERE id = $1 AND user_id = $2`,
       [id, userId],
@@ -55,12 +55,8 @@ export class VehiclesService {
     const values = [];
     let paramIndex = 1;
 
-    if (updateVehicleDto.name !== undefined) {
-      fields.push(`name = $${paramIndex++}`);
-      values.push(updateVehicleDto.name);
-    }
     if (updateVehicleDto.makeModel !== undefined) {
-      fields.push(`make = $${paramIndex++}`);
+      fields.push(`name = $${paramIndex++}`);
       values.push(updateVehicleDto.makeModel);
     }
     if (updateVehicleDto.year !== undefined) {
@@ -70,6 +66,14 @@ export class VehiclesService {
     if (updateVehicleDto.fuelType !== undefined) {
       fields.push(`fuel_type = $${paramIndex++}`);
       values.push(updateVehicleDto.fuelType);
+    }
+    if (updateVehicleDto.licensePlate !== undefined) {
+      fields.push(`license_plate = $${paramIndex++}`);
+      values.push(updateVehicleDto.licensePlate);
+    }
+    if (updateVehicleDto.tankCapacityLiters !== undefined) {
+      fields.push(`tank_capacity_liters = $${paramIndex++}`);
+      values.push(updateVehicleDto.tankCapacityLiters);
     }
 
     if (fields.length === 0) {
@@ -82,7 +86,7 @@ export class VehiclesService {
       `UPDATE vehicles
        SET ${fields.join(', ')}
        WHERE id = $${paramIndex++} AND user_id = $${paramIndex}
-       RETURNING id, user_id, name, make, model, year, fuel_type, created_at, updated_at`,
+       RETURNING id, user_id, name as "makeModel", year, fuel_type as "fuelType", license_plate as "licensePlate", tank_capacity_liters as "tankCapacityLiters", created_at as "createdAt", updated_at as "updatedAt"`,
       values,
     );
 

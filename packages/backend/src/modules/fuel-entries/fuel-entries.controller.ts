@@ -43,8 +43,9 @@ export class FuelEntriesController {
   })
   @ApiResponse({ status: 200, description: 'Returns list of fuel entries' })
   @ApiResponse({ status: 401, description: 'Not authenticated' })
-  findAll(@Req() req: any, @Query('vehicleId', new ParseIntPipe({ optional: true })) vehicleId?: number) {
-    return this.fuelEntriesService.findAll(req.user.id, vehicleId);
+  findAll(@Req() req: any, @Query('vehicleId') vehicleId?: string) {
+    const vehicleIdNum = vehicleId ? parseInt(vehicleId, 10) : undefined;
+    return this.fuelEntriesService.findAll(req.user.id, vehicleIdNum);
   }
 
   @Get(':id')

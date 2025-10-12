@@ -5,13 +5,13 @@ import { PeriodType, UnitSystem, StatisticsQueryDto } from './dto/statistics-que
 
 export interface FuelEntryStats {
   id: number;
-  entry_date: Date;
+  entryDate: Date;
   odometer: number;
-  quantity_liters: number;
-  total_amount: number;
+  quantityLiters: number;
+  totalAmount: number;
   currency: string;
-  fuel_brand?: string;
-  fuel_grade?: string;
+  fuelBrand?: string;
+  fuelGrade?: string;
 }
 
 export interface ConsumptionData {
@@ -133,7 +133,14 @@ export class StatisticsService {
     const { startDate, endDate } = this.calculateDateRange(query);
     const dateFilter = this.buildDateFilter(startDate, endDate, 3);
 
-    let sql = `SELECT id, entry_date, odometer, quantity_liters, total_amount, currency, fuel_brand, fuel_grade
+    let sql = `SELECT id,
+                      entry_date as "entryDate",
+                      odometer,
+                      quantity_liters as "quantityLiters",
+                      total_amount as "totalAmount",
+                      currency,
+                      fuel_brand as "fuelBrand",
+                      fuel_grade as "fuelGrade"
        FROM fuel_entries
        WHERE vehicle_id = $1 AND user_id = $2`;
 
@@ -146,13 +153,18 @@ export class StatisticsService {
 
     sql += ` ORDER BY entry_date ASC, odometer ASC`;
 
-    const entries = await this.pool.query<FuelEntryStats>(sql, params);
+    const result = await this.pool.query(sql, params);
+    const entries: FuelEntryStats[] = result.rows.map(row => ({
+      ...row,
+      quantityLiters: parseFloat(row.quantityLiters),
+      totalAmount: parseFloat(row.totalAmount),
+    }));
 
-    if (entries.rows.length < 2) {
+    if (entries.length < 2) {
       return {
         vehicleId,
         vehicleName: vehicle.name,
-        totalEntries: entries.rows.length,
+        totalEntries: entries.length,
         message: 'Need at least 2 fuel entries to calculate statistics',
         calculations: [],
         summary: null,
@@ -161,19 +173,19 @@ export class StatisticsService {
 
     const calculations: ConsumptionData[] = [];
 
-    for (let i = 1; i < entries.rows.length; i++) {
-      const currentEntry = entries.rows[i];
-      const previousEntry = entries.rows[i - 1];
+    for (let i = 1; i < entries.length; i++) {
+      const currentEntry = entries[i];
+      const previousEntry = entries[i - 1];
 
       const distanceTraveled = currentEntry.odometer - previousEntry.odometer;
-      const fuelConsumed = parseFloat(currentEntry.quantity_liters.toString());
+      const fuelConsumed = currentEntry.quantityLiters;
       const consumptionPer100km = (fuelConsumed / distanceTraveled) * 100;
-      const costPerLiter = parseFloat(currentEntry.total_amount.toString()) / fuelConsumed;
+      const costPerLiter = currentEntry.totalAmount / fuelConsumed;
       const costPer100km = consumptionPer100km * costPerLiter;
 
       let calcData: ConsumptionData = {
         entryId: currentEntry.id,
-        entryDate: currentEntry.entry_date,
+        entryDate: currentEntry.entryDate,
         distanceTraveled,
         fuelConsumed,
         consumptionPer100km: Math.round(consumptionPer100km * 100) / 100,
@@ -192,9 +204,9 @@ export class StatisticsService {
       calculations.push(calcData);
     }
 
-    const totalDistance = entries.rows[entries.rows.length - 1].odometer - entries.rows[0].odometer;
+    const totalDistance = entries[entries.length - 1].odometer - entries[0].odometer;
     const totalFuel = calculations.reduce((sum, calc) => sum + calc.fuelConsumed, 0);
-    const totalCost = entries.rows.slice(1).reduce((sum, entry) => sum + parseFloat(entry.total_amount.toString()), 0);
+    const totalCost = entries.slice(1).reduce((sum, entry) => sum + entry.totalAmount, 0);
     const averageConsumption = (totalFuel / totalDistance) * 100;
     const averageCostPerLiter = totalCost / totalFuel;
     const averageCostPer100km = averageConsumption * averageCostPerLiter;
@@ -207,7 +219,7 @@ export class StatisticsService {
     return {
       vehicleId,
       vehicleName: vehicle.name,
-      totalEntries: entries.rows.length,
+      totalEntries: entries.length,
       calculations,
       summary: {
         totalDistance,
@@ -217,7 +229,7 @@ export class StatisticsService {
         averageCostPerLiter: Math.round(averageCostPerLiter * 100) / 100,
         averageCostPer100km: Math.round(averageCostPer100km * 100) / 100,
         last3EntriesAvgConsumption: last3AvgConsumption ? Math.round(last3AvgConsumption * 100) / 100 : null,
-        currency: entries.rows[1].currency,
+        currency: entries[1].currency,
       },
     };
   }

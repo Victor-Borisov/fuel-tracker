@@ -18,6 +18,45 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - fueltracker-network
+
+  backend:
+    build:
+      context: ./packages/backend
+      dockerfile: Dockerfile
+    container_name: fueltracker-backend
+    environment:
+      DATABASE_URL: postgresql://fueluser:fuelpass@postgres:5432/fueltracker
+      SESSION_SECRET: ${SESSION_SECRET:-dev-secret-change-in-production}
+      PORT: 3000
+      NODE_ENV: ${NODE_ENV:-production}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost}
+    ports:
+      - "3000:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - fueltracker-network
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./packages/frontend
+      dockerfile: Dockerfile
+    container_name: fueltracker-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - fueltracker-network
+    restart: unless-stopped
 
 volumes:
   postgres-data:
+
+networks:
+  fueltracker-network:
+    driver: bridge

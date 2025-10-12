@@ -8,6 +8,26 @@ import { UpdateFuelEntryDto } from './dto/update-fuel-entry.dto';
 export class FuelEntriesService {
   constructor(@Inject(PG_CONNECTION) private pool: Pool) {}
 
+  private transformToCamelCase(row: any) {
+    return {
+      id: row.id,
+      userId: row.user_id,
+      vehicleId: row.vehicle_id,
+      entryDate: row.entry_date,
+      odometer: row.odometer,
+      stationName: row.station_name,
+      fuelBrand: row.fuel_brand,
+      fuelGrade: row.fuel_grade,
+      quantityLiters: parseFloat(row.quantity_liters),
+      totalAmount: parseFloat(row.total_amount),
+      currency: row.currency,
+      notes: row.notes,
+      createdAt: row.created_at,
+      updatedAt: row.updated_at,
+      vehicleName: row.vehicle_name,
+    };
+  }
+
   async create(userId: number, createFuelEntryDto: CreateFuelEntryDto) {
     const {
       vehicleId,
@@ -67,7 +87,7 @@ export class FuelEntriesService {
       ],
     );
 
-    return result.rows[0];
+    return this.transformToCamelCase(result.rows[0]);
   }
 
   async findAll(userId: number, vehicleId?: number) {
@@ -90,7 +110,7 @@ export class FuelEntriesService {
     query += ' ORDER BY fe.entry_date DESC, fe.odometer DESC';
 
     const result = await this.pool.query(query, params);
-    return result.rows;
+    return result.rows.map(row => this.transformToCamelCase(row));
   }
 
   async findOne(id: number, userId: number) {
@@ -109,7 +129,7 @@ export class FuelEntriesService {
       throw new NotFoundException(`Fuel entry with ID ${id} not found`);
     }
 
-    return result.rows[0];
+    return this.transformToCamelCase(result.rows[0]);
   }
 
   async update(id: number, userId: number, updateFuelEntryDto: UpdateFuelEntryDto) {
@@ -171,7 +191,7 @@ export class FuelEntriesService {
       values,
     );
 
-    return result.rows[0];
+    return this.transformToCamelCase(result.rows[0]);
   }
 
   async remove(id: number, userId: number) {
