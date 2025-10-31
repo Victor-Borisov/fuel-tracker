@@ -32,7 +32,7 @@ function transformKeys(obj: any): any {
       }
 
       return acc;
-    }, {});
+    }, {} as Record<string, any>);
   }
 
   return obj;
