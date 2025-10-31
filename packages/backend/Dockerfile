@@ -6,7 +6,7 @@ FROM node:20-alpine AS builder
 WORKDIR /app
 
 # Copy workspace root files
-COPY package*.json ./
+COPY package*.json package-lock.json ./
 
 # Copy backend package files
 COPY packages/backend/package*.json ./packages/backend/
@@ -26,7 +26,7 @@ FROM node:20-alpine AS production
 WORKDIR /app
 
 # Copy workspace root files
-COPY package*.json ./
+COPY package*.json package-lock.json ./
 
 # Copy backend package files
 COPY packages/backend/package*.json ./packages/backend/
