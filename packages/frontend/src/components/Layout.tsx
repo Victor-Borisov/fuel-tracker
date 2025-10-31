@@ -35,7 +35,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
           <Link to="/profile" style={{ color: 'white', textDecoration: 'none' }}>Profile</Link>
         </div>
         <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
-          <span>{user?.display_name || user?.email}</span>
+          <span>{user?.displayName || user?.email}</span>
           <button
             onClick={handleLogout}
             style={{

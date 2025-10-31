@@ -5,11 +5,11 @@ import { authApi } from '../api/auth';
 import { useNavigate } from 'react-router-dom';
 
 interface ProfileFormData {
-  displayName: string;
-  preferredCurrency: string;
-  preferredDistanceUnit: string;
-  preferredVolumeUnit: string;
-  timezone: string;
+  displayName?: string;
+  preferredCurrency?: string;
+  preferredDistanceUnit?: 'km' | 'mi';
+  preferredVolumeUnit?: 'L' | 'gal';
+  timezone?: string;
 }
 
 export const Profile: React.FC = () => {
