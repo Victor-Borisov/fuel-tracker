@@ -178,7 +178,7 @@ export const Profile: React.FC = () => {
               </label>
               <select
                 value={formData.preferredDistanceUnit}
-                onChange={(e) => setFormData({ ...formData, preferredDistanceUnit: e.target.value })}
+                onChange={(e) => setFormData({ ...formData, preferredDistanceUnit: e.target.value as 'km' | 'mi' })}
                 style={{
                   width: '100%',
                   padding: '0.5rem',
@@ -197,7 +197,7 @@ export const Profile: React.FC = () => {
               </label>
               <select
                 value={formData.preferredVolumeUnit}
-                onChange={(e) => setFormData({ ...formData, preferredVolumeUnit: e.target.value })}
+                onChange={(e) => setFormData({ ...formData, preferredVolumeUnit: e.target.value as 'L' | 'gal' })}
                 style={{
                   width: '100%',
                   padding: '0.5rem',
