@@ -5,32 +5,38 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Copy package files
+# Copy workspace root files
 COPY package*.json ./
+
+# Copy backend package files
+COPY packages/backend/package*.json ./packages/backend/
 
 # Install dependencies
 RUN npm ci
 
-# Copy source code
-COPY . .
+# Copy backend source code
+COPY packages/backend ./packages/backend
 
 # Build the application
-RUN npm run build
+RUN npm run build --workspace=backend
 
 # Stage 2: Production
 FROM node:20-alpine AS production
 
 WORKDIR /app
 
-# Copy package files
+# Copy workspace root files
 COPY package*.json ./
+
+# Copy backend package files
+COPY packages/backend/package*.json ./packages/backend/
 
 # Install only production dependencies
 RUN npm ci --only=production
 
 # Copy built application from builder stage
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/migrations ./migrations
+COPY --from=builder /app/packages/backend/dist ./dist
+COPY --from=builder /app/packages/backend/migrations ./migrations
 
 # Expose port
 EXPOSE 3000
