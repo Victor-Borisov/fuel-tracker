@@ -4,6 +4,7 @@ import { vehiclesApi } from '../api/vehicles';
 import { Vehicle } from '../types';
 
 interface VehicleFormData {
+  name: string;
   makeModel: string;
   year: number;
   licensePlate: string;
@@ -12,6 +13,7 @@ interface VehicleFormData {
 }
 
 const emptyForm: VehicleFormData = {
+  name: '',
   makeModel: '',
   year: new Date().getFullYear(),
   licensePlate: '',
@@ -69,6 +71,7 @@ export const Vehicles: React.FC = () => {
 
   const handleEdit = (vehicle: Vehicle) => {
     setFormData({
+      name: vehicle.name || '',
       makeModel: vehicle.makeModel || '',
       year: vehicle.year || new Date().getFullYear(),
       licensePlate: vehicle.licensePlate || '',
@@ -146,6 +149,25 @@ export const Vehicles: React.FC = () => {
             <h2>{editingId ? 'Edit Vehicle' : 'Add New Vehicle'}</h2>
             <form onSubmit={handleSubmit}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+                <div style={{ gridColumn: '1 / -1' }}>
+                  <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>
+                    Name *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. My Car"
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    style={{
+                      width: '100%',
+                      padding: '0.5rem',
+                      border: '1px solid #ced4da',
+                      borderRadius: '4px',
+                    }}
+                  />
+                </div>
+
                 <div style={{ gridColumn: '1 / -1' }}>
                   <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>
                     Make/Model

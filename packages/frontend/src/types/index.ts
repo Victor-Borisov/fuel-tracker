@@ -1,17 +1,18 @@
 export interface User {
   id: number;
   email: string;
-  display_name: string | null;
-  preferred_currency: string;
-  preferred_distance_unit: 'km' | 'mi';
-  preferred_volume_unit: 'L' | 'gal';
+  displayName: string | null;
+  preferredCurrency: string;
+  preferredDistanceUnit: 'km' | 'mi';
+  preferredVolumeUnit: 'L' | 'gal';
   timezone: string;
-  created_at: string;
-  updated_at?: string;
+  createdAt: string;
+  updatedAt?: string;
 }
 
 export interface Vehicle {
   id: number;
+  name: string;
   makeModel?: string | null;
   year?: number | null;
   fuelType?: string | null;
