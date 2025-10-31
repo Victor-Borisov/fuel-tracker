@@ -69,7 +69,7 @@ CREATE INDEX idx_fuel_entries_entry_date ON fuel_entries(entry_date);
 -- Insert sample users
 -- Password for all users: "password123"
 INSERT INTO users (email, password_hash, display_name, preferred_currency, preferred_distance_unit, preferred_volume_unit, timezone) VALUES
-('demo@fueltracker.com', '$2b$10$05Ax7tmFK/7HAZxq9KnB5O4SJ5GOjhzqRRakA3kVEa5DCGzyZqMQi', 'Demo User', 'USD', 'mi', 'gal', 'America/New_York');
+('demo@fueltracker.com', '$2b$10$swYnpI9MANewYI06/w4JYuNy.Q9044zpiRRfaAw7Z9rii8K3xp5Hi', 'Demo User', 'USD', 'mi', 'gal', 'America/New_York');
 
 -- Insert sample vehicles for demo user (id will be 1)
 INSERT INTO vehicles (user_id, name, year, fuel_type, license_plate, tank_capacity_liters) VALUES
