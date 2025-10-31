@@ -13,7 +13,7 @@ export const Dashboard: React.FC = () => {
   const [brandStats, setBrandStats] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [period, setPeriod] = useState<PeriodType>('last_30_days');
+  const [period, setPeriod] = useState<PeriodType>('all_time');
 
   const loadVehicles = async () => {
     try {

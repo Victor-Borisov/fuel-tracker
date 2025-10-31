@@ -30,7 +30,7 @@ services:
       DATABASE_URL: postgresql://fueluser:fuelpass@postgres:5432/fueltracker
       SESSION_SECRET: ${SESSION_SECRET:-dev-secret-change-in-production}
       PORT: 3000
-      NODE_ENV: ${NODE_ENV:-production}
+      NODE_ENV: ${NODE_ENV:-development}
       FRONTEND_URL: ${FRONTEND_URL:-http://localhost}
     ports:
       - "3000:3000"
